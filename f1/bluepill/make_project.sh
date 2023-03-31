@@ -18,5 +18,6 @@ echo "" >> $1/$1.c
 echo "int main(void)" >> $1/$1.c
 echo "{" >> $1/$1.c
 echo "clock_setup();" >> $1/$1.c
+echo "while(1);" >> $1/$1.c
 echo "}" >> $1/$1.c
 
