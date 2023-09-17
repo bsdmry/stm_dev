@@ -44,10 +44,7 @@ static void spi_transmit(uint16_t data){
 }
 
 static void max7219_send(uint8_t cmd, uint8_t data){
-	uint16_t tx = 0;
-	tx = cmd;
-	tx = (tx << 8) | data;
-	spi_transmit(tx);
+	spi_transmit(((uint16_t)cmd << 8) | data);
 }
 
 int main(void)

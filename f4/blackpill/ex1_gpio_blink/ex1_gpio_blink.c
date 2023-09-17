@@ -25,13 +25,13 @@ static uint32_t dwt_setup(void) {
   }
 }
 
-static void dwt_delay_us(volatile uint32_t microseconds){
+static void dwt_delay_us(uint32_t microseconds){
         uint32_t initial_ticks = dwt_read_cycle_counter();
         uint32_t us_count_tics = microseconds * (rcc_ahb_frequency / 1000000);
         while ((dwt_read_cycle_counter() - initial_ticks) < us_count_tics);
 }
 
-static void dwt_delay_ms(volatile uint32_t milliseconds){
+static void dwt_delay_ms(uint32_t milliseconds){
         uint32_t initial_ticks = dwt_read_cycle_counter();
         uint32_t ms_count_tics = milliseconds * (rcc_ahb_frequency / 1000);
         while ((dwt_read_cycle_counter() - initial_ticks) < ms_count_tics);

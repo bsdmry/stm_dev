@@ -30,7 +30,7 @@ typedef struct {
         uint8_t assembling;
 } cmd;
 
-rb tx_rb = {
+volatile rb tx_rb = {
   .data = tx_buffer,
   .size = sizeof(tx_buffer),
   .head = 0,
@@ -38,7 +38,7 @@ rb tx_rb = {
   .length = 0
 };
 
-rb rx_rb = {
+volatile rb rx_rb = {
   .data = rx_buffer,
   .size = sizeof(rx_buffer),
   .head = 0,
@@ -51,7 +51,7 @@ cmd cli_cmd = {
   .assembling =0
 };
 
-static uint8_t rb_push(rb *ring, uint8_t data)
+static uint8_t rb_push(volatile rb *ring, const uint8_t data)
 {
   if (((ring->tail + 1) % ring->size) != ring->head)
   {
@@ -63,7 +63,7 @@ static uint8_t rb_push(rb *ring, uint8_t data)
   return 0;
 }
 
-static uint8_t rb_pop(rb *ring, uint8_t *data)
+static uint8_t rb_pop(volatile rb *ring, uint8_t *data)
 {
   if (ring->head != ring->tail)
   {
@@ -75,7 +75,7 @@ static uint8_t rb_pop(rb *ring, uint8_t *data)
   return 0;
 }
 
-static void usart_transmit(rb *ring, char *str){
+static void usart_transmit(volatile rb *ring, const char *str){
         while (*str != '\000') {
                 rb_push(ring, (uint8_t)*str);
                 str++;
@@ -84,7 +84,7 @@ static void usart_transmit(rb *ring, char *str){
 }
 
 
-static void parse_cmd(rb *ring, cmd *cli){
+static void parse_cmd(volatile rb *ring, cmd *cli){
         uint8_t data = 0;
         while(rb_pop(ring, &data)){
                 if(data == 0x0D){ // \r char
@@ -128,7 +128,7 @@ static uint32_t  dwt_setup(void)
   }
 }
 
-static void dwt_delay_us(volatile uint32_t microseconds)
+static void dwt_delay_us(uint32_t microseconds)
 {
         uint32_t initial_ticks = dwt_read_cycle_counter();
         uint32_t us_count_tics = microseconds * (rcc_ahb_frequency / 1000000);
@@ -139,8 +139,8 @@ int main(void)
 {
 	clock_setup();
 	dwt_setup();
-	nvic_enable_irq(NVIC_USART2_IRQ); //Включаем контроллер прерываний для USART
-	nvic_set_priority(NVIC_USART2_IRQ, 1); //Опционально, устанавливем приоритет прерывания.
+	nvic_enable_irq(NVIC_USART2_IRQ);
+	nvic_set_priority(NVIC_USART2_IRQ, 1); //Set USART IRQ priority
 	gpio_mode_setup(GPIOA, GPIO_MODE_AF, GPIO_PUPD_NONE, GPIO2 | GPIO3);
         gpio_set_af(GPIOA, GPIO_AF7, GPIO2 | GPIO3);
 

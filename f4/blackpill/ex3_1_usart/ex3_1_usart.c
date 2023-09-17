@@ -35,7 +35,7 @@ static void dwt_delay_ms(volatile uint32_t milliseconds)
         while ((dwt_read_cycle_counter() - initial_ticks) < ms_count_tics);
 }
 
-static void usart_transmit(char *str)
+static void usart_transmit(const char *str)
 {
         while (*str != '\000') {
                 usart_send_blocking(USART2, *str);
